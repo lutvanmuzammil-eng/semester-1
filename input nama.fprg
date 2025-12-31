@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="input nama"/>
+        <attribute name="authors" value="A S U S"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2025-12-23 12:28:50 AM"/>
+        <attribute name="created" value="QSBTIFUgUztMQVBUT1AtSjZVNjJWNFM7MjAyNS0xMi0yMjswODoxMjoyNiBQTTsyNzM4"/>
+        <attribute name="edited" value="QSBTIFUgUztMQVBUT1AtSjZVNjJWNFM7MjAyNS0xMi0yMzsxMjoyODo1MCBBTTsxOzI4MzE="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="nama, a, ulang" type="String" array="False" size=""/>
+            <assign variable="ulang" expression="&quot;tidak&quot;"/>
+            <while expression="(ulang == &quot;tidak&quot;)">
+                <output expression="&quot;masukkan nama dan tanggal lahir anda&quot;" newline="True"/>
+                <input variable="nama"/>
+                <output expression="nama" newline="True"/>
+                <output expression="&quot;masukkan tanggal lahir&quot;" newline="True"/>
+                <input variable="a"/>
+                <output expression="&quot;apakah data yang kamu input suadah benar?? (ya/tidak)&quot;" newline="True"/>
+                <input variable="ulang"/>
+            </while>
+            <output expression="&quot;nama: &quot;&amp; nama &amp; ToChar(13)&amp;&quot;,tanggal lahir:&quot; &amp;a" newline="True"/>
+            <output expression="&quot;program selesai&quot;" newline="True"/>
+        </body>
+    </function>
+</flowgorithm>

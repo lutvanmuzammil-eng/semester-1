@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="flowchart alpro"/>
+        <attribute name="authors" value="A S U S"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2025-12-23 04:16:03 PM"/>
+        <attribute name="created" value="QSBTIFUgUztMQVBUT1AtSjZVNjJWNFM7MjAyNS0xMi0xOTswOToyMjozOCBBTTsyNzM0"/>
+        <attribute name="edited" value="QSBTIFUgUztMQVBUT1AtSjZVNjJWNFM7MjAyNS0xMi0yMzswNDoxNjowMyBQTTs0OzI4NDU="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="kata" type="String" array="False" size=""/>
+            <declare name="temp" type="String" array="False" size=""/>
+            <declare name="panjang, L" type="Integer" array="False" size=""/>
+            <output expression="&quot; MASUKKAN KALIMAT YANG INGIN DI EKSEKUSI &quot;" newline="True"/>
+            <input variable="kata"/>
+            <output expression="&quot; KALIMAT YANG ANDA INPUT ADALAH : &quot; &amp; kata" newline="True"/>
+            <for variable="panjang" start="len(kata)" end="1" direction="dec" step="1">
+                <assign variable="temp" expression="&quot;&quot;"/>
+                <for variable="L" start="0" end="panjang -1" direction="inc" step="1">
+                    <assign variable="temp" expression="temp &amp; char(kata,L)"/>
+                </for>
+                <output expression="&quot;&quot;&amp;temp" newline="True"/>
+            </for>
+        </body>
+    </function>
+</flowgorithm>
