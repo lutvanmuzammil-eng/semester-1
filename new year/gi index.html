@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy New Year 2026</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: radial-gradient(circle at 50% 30%, #141833 0%, #060611 55%, #000 100%);
+      overflow: hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      display: grid;
+      place-items: center;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .center {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 24px;
+      pointer-events: none;
+    }
+
+    #countdown {
+      font-size: clamp(64px, 12vw, 140px);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-shadow: 0 6px 30px rgba(0,0,0,.7);
+      opacity: 1;
+      transform: scale(1);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+
+    .hidden { opacity: 0 !important; transform: scale(.92) !important; }
+
+    #title {
+      margin-top: 12px;
+      font-size: clamp(28px, 5vw, 70px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 10px 40px rgba(0,0,0,.75);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    #subtitle {
+      margin-top: 14px;
+      font-size: clamp(14px, 2.1vw, 20px);
+      line-height: 1.6;
+      max-width: 720px;
+      margin-inline: auto;
+      color: rgba(255,255,255,.9);
+      text-shadow: 0 8px 24px rgba(0,0,0,.8);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 1.4s ease .15s, transform 1.4s ease .15s;
+    }
+
+    .show { opacity: 1 !important; transform: translateY(0) !important; }
+
+    .hint {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      font-size: 12px;
+      color: rgba(255,255,255,.6);
+      text-shadow: 0 6px 16px rgba(0,0,0,.8);
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fx"></canvas>
+
+  <div class="center">
+    <div id="countdown">3</div>
+    <div id="title">HAPPY NEW YEAR 2026</div>
+    <div id="subtitle">
+      Selamat Tahun Baru 2026! Semoga kita semua jadi pribadi yang lebih baik,
+      makin sehat, makin sukses, dan selalu diberi kebahagiaan. ✨
+      <br><br>
+      — lutvan
+    </div>
+  </div>
+
+  <div class="hint">Tip: klik/ketuk layar untuk tambah kembang api 🎆</div>
+
+  <script>
+    // ======= Countdown 3..2..1..0 =======
+    const elCountdown = document.getElementById("countdown");
+    const elTitle = document.getElementById("title");
+    const elSubtitle = document.getElementById("subtitle");
+
+    let t = 3;
+    elCountdown.textContent = t;
+
+    const countdownTimer = setInterval(() => {
+      t--;
+      if (t >= 0) {
+        elCountdown.textContent = t;
+        popCountdown();
+      }
+      if (t === 0) {
+        // sedikit jeda, lalu mulai show + fireworks
+        setTimeout(() => startShow(), 500);
+        clearInterval(countdownTimer);
+      }
+    }, 1000);
+
+    function popCountdown() {
+      elCountdown.style.transform = "scale(1.18)";
+      setTimeout(() => elCountdown.style.transform = "scale(1)", 120);
+    }
+
+    function startShow() {
+      elCountdown.classList.add("hidden");
+      // Hapus elemen countdown sepenuhnya agar tidak mengganggu
+      setTimeout(() => elCountdown.remove(), 400);
+      setTimeout(() => {
+        elTitle.classList.add("show");
+        elSubtitle.classList.add("show");
+      }, 450);
+
+      // ledakan awal untuk "wow"
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => launchRandomFirework(), i * 220);
+      }
+      // terus-menerus
+      autoFireworks = true;
+    }
+
+    // ======= Fireworks Canvas =======
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+
+    let W = 0, H = 0, DPR = 1;
+    function resize() {
+      DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const gravity = 0.08;
+    const friction = 0.985;
+
+    const rockets = [];
+    const sparks = [];
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    function launchFirework(x, yTarget) {
+      rockets.push({
+        x,
+        y: H + 10,
+        vx: rand(-1.2, 1.2),
+        vy: rand(-10.5, -12.8),
+        yTarget: yTarget ?? rand(H * 0.18, H * 0.5),
+        trail: []
+      });
+    }
+
+    function explode(x, y) {
+      const count = Math.floor(rand(60, 110));
+      const baseSpeed = rand(2.4, 4.8);
+      // Tambahkan hue untuk warna-warni
+      const hue = rand(0, 360);
+      for (let i = 0; i < count; i++) {
+        const a = (Math.PI * 2) * (i / count) + rand(-0.05, 0.05);
+        const s = baseSpeed * rand(0.6, 1.35);
+        sparks.push({
+          x, y,
+          vx: Math.cos(a) * s,
+          vy: Math.sin(a) * s,
+          life: Math.floor(rand(50, 95)),
+          age: 0,
+          size: rand(1.2, 2.2),
+          twinkle: Math.random() < 0.25,
+          hue: hue + rand(-30, 30) // Variasi hue untuk warna-warni
+        });
+      }
+
+      // flash dengan warna
+      flashes.push({ x, y, r: 10, a: 0.55, hue });
+    }
+
+    const flashes = [];
+
+    function launchRandomFirework() {
+      const x = rand(W * 0.15, W * 0.85);
+      launchFirework(x, rand(H * 0.18, H * 0.55));
+    }
+
+    let autoFireworks = false;
+
+    // klik untuk tambah fireworks
+    window.addEventListener("pointerdown", (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      // 1 rocket ke arah titik klik
+      launchFirework(x, y);
+      // dan 1 random biar rame
+      launchRandomFirework();
+    });
+
+    // ======= Draw Loop =======
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min(2, (now - last) / 16.67);
+      last = now;
+
+      // background fade
+      ctx.fillStyle = "rgba(0,0,0,0.18)";
+      ctx.fillRect(0, 0, W, H);
+
+      // auto fireworks
+      if (autoFireworks && Math.random() < 0.08) launchRandomFirework();
+
+      // rockets
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.vy += gravity * dt;
+        r.x += r.vx * dt;
+        r.y += r.vy * dt;
+
+        r.trail.push({ x: r.x, y: r.y });
+        if (r.trail.length > 14) r.trail.shift();
+
+        // draw trail
+        ctx.beginPath();
+        for (let j = 0; j < r.trail.length; j++) {
+          const p = r.trail[j];
+          if (j === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // head
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.fill();
+
+        if (r.vy >= -0.5 || r.y <= r.yTarget) {
+          explode(r.x, r.y);
+          rockets.splice(i, 1);
+        }
+      }
+
+      // sparks dengan warna
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.vx *= Math.pow(friction, dt);
+        s.vy *= Math.pow(friction, dt);
+        s.vy += gravity * 0.55 * dt;
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.age += 1 * dt;
+
+        const lifeLeft = 1 - (s.age / s.life);
+        if (lifeLeft <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+
+        const alpha = Math.max(0, lifeLeft);
+        const flicker = s.twinkle ? (0.65 + 0.35 * Math.sin((now/70) + i)) : 1;
+
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${s.hue}, 100%, 70%, ${alpha * flicker})`;
+        ctx.fill();
+      }
+
+      // flashes dengan warna
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const f = flashes[i];
+        f.r += 18 * dt;
+        f.a -= 0.04 * dt;
+        if (f.a <= 0) { flashes.splice(i, 1); continue; }
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `hsla(${f.hue}, 100%, 70%, ${f.a})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // start with a clean black
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, W, H);
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
